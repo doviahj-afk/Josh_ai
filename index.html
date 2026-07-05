@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>josh-ai — terminal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="crt-overlay" aria-hidden="true"></div>
+
+<div class="terminal">
+
+  <div class="terminal__titlebar">
+    <span class="dot dot--red"></span>
+    <span class="dot dot--amber"></span>
+    <span class="dot dot--green"></span>
+    <span class="terminal__title">josh-ai — {{ model }} — <span id="conn-state">connecting</span></span>
+    <button class="terminal__reset" id="reset-btn" title="Clear conversation">reset</button>
+  </div>
+
+  <div class="terminal__body">
+
+    <main class="log" id="log">
+      <div class="boot" id="boot">
+        <div class="boot__line">JOSH AI v1.0</div>
+        <div class="boot__line">gemini backend · react loop · sandboxed tools</div>
+        <div class="boot__line" id="boot-status">establishing connection<span class="cursor">_</span></div>
+      </div>
+    </main>
+
+    <aside class="side">
+      <div class="side__label">long-term memory</div>
+      <ul class="side__facts" id="facts-list">
+        <li class="side__empty">nothing remembered yet</li>
+      </ul>
+      <div class="side__hint">say "remember that ..." and josh will store it here across sessions.</div>
+    </aside>
+
+  </div>
+
+  <form class="inputbar" id="input-form">
+    <span class="inputbar__prompt">&gt;</span>
+    <input class="inputbar__field" id="input-field" type="text" autocomplete="off" placeholder="ask josh something..." autofocus>
+    <button class="inputbar__submit" type="submit">send</button>
+  </form>
+
+</div>
+
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

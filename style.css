@@ -1,0 +1,261 @@
+/* ===========================================================
+   Josh AI — Design tokens
+   A CRT terminal you're having a conversation with: amber
+   phosphor glow, scanlines, monospace everything.
+   =========================================================== */
+
+:root {
+  --black: #0A0A0C;
+  --panel: #101012;
+  --border: #232323;
+  --amber: #FFB000;
+  --amber-dim: #9C6E1F;
+  --text: #E8E6DF;
+  --text-dim: #7A7A72;
+  --green: #4FE38A;
+  --red: #E5533D;
+
+  --font-display: "VT323", monospace;
+  --font-mono: "JetBrains Mono", "Courier New", monospace;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--black);
+  color: var(--text);
+  font-family: var(--font-mono);
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; }
+}
+
+/* ---------- Signature element: CRT scanline + flicker overlay ---------- */
+.crt-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 176, 0, 0.02) 0px,
+    rgba(255, 176, 0, 0.02) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: overlay;
+  animation: flicker 6s infinite;
+}
+@keyframes flicker {
+  0%, 100% { opacity: 0.9; }
+  92% { opacity: 0.9; }
+  93% { opacity: 0.6; }
+  94% { opacity: 0.9; }
+}
+
+/* ---------- Terminal window ---------- */
+.terminal {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-width: 980px;
+  margin: 0 auto;
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+}
+
+.terminal__titlebar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.dot { width: 10px; height: 10px; border-radius: 50%; opacity: 0.85; }
+.dot--red { background: var(--red); }
+.dot--amber { background: var(--amber); }
+.dot--green { background: var(--green); }
+.terminal__title {
+  margin-left: 8px;
+  font-size: 12px;
+  color: var(--text-dim);
+  letter-spacing: 0.02em;
+}
+#conn-state { color: var(--amber-dim); }
+#conn-state.live { color: var(--green); }
+
+.terminal__reset {
+  margin-left: auto;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.terminal__reset:hover { color: var(--amber); border-color: var(--amber-dim); }
+
+.terminal__body {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+/* ---------- Log / chat area ---------- */
+.log {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 22px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.boot { color: var(--text-dim); margin-bottom: 18px; }
+.boot__line { margin-bottom: 2px; }
+.boot__line:first-child {
+  font-family: var(--font-display);
+  font-size: 26px;
+  color: var(--amber);
+  letter-spacing: 0.04em;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.cursor { animation: blink 1s step-end infinite; color: var(--amber); }
+@keyframes blink { 50% { opacity: 0; } }
+
+.msg { margin-bottom: 16px; }
+.msg__prompt { color: var(--text-dim); }
+.msg--user .msg__prompt { color: var(--amber-dim); }
+.msg--user .msg__prompt::before { content: "you@josh:~$ "; }
+.msg--josh .msg__prompt::before { content: "josh$ "; color: var(--green); }
+.msg__text { color: var(--text); white-space: pre-wrap; }
+.msg--error .msg__text { color: var(--red); }
+
+.trace {
+  margin: 6px 0 10px 0;
+  border-left: 2px solid var(--border);
+  padding-left: 10px;
+}
+.trace__step {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 3px;
+}
+.trace__step .label {
+  color: var(--amber-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-right: 6px;
+}
+.trace__toggle {
+  font-size: 11px;
+  color: var(--text-dim);
+  cursor: pointer;
+  text-decoration: underline dotted;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--font-mono);
+}
+.trace__body { display: none; }
+.trace__body.trace__body--open { display: block; }
+
+.thinking {
+  color: var(--text-dim);
+  font-size: 13px;
+}
+.thinking .cursor { color: var(--text-dim); }
+
+/* ---------- Sidebar: long-term memory ---------- */
+.side {
+  width: 240px;
+  flex-shrink: 0;
+  border-left: 1px solid var(--border);
+  background: var(--panel);
+  padding: 16px;
+  overflow-y: auto;
+  display: none;
+}
+@media (min-width: 720px) {
+  .side { display: block; }
+}
+.side__label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+  margin-bottom: 10px;
+}
+.side__facts {
+  list-style: none;
+  margin: 0 0 14px 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.side__facts li {
+  font-size: 12px;
+  color: var(--text);
+  border-left: 2px solid var(--amber-dim);
+  padding-left: 8px;
+  line-height: 1.4;
+}
+.side__empty {
+  color: var(--text-dim);
+  font-style: italic;
+  border-left: none !important;
+  padding-left: 0 !important;
+}
+.side__hint {
+  font-size: 11px;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+/* ---------- Input bar ---------- */
+.inputbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  background: var(--panel);
+  flex-shrink: 0;
+}
+.inputbar__prompt { color: var(--amber); font-size: 14px; }
+.inputbar__field {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 14px;
+}
+.inputbar__field::placeholder { color: var(--text-dim); }
+.inputbar__submit {
+  background: transparent;
+  border: 1px solid var(--amber-dim);
+  color: var(--amber);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 6px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.inputbar__submit:hover { background: rgba(255, 176, 0, 0.08); }
+.inputbar__submit:focus-visible,
+.terminal__reset:focus-visible,
+.inputbar__field:focus-visible {
+  outline: 1px solid var(--amber);
+  outline-offset: 2px;
+}
